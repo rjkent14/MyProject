@@ -1,3 +1,10 @@
+      <Tabs.Screen
+        name="SpotifyLogin"
+        options={{
+          title: 'Spotify Login',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="music.note" color={color} />,
+        }}
+      />
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -38,6 +45,13 @@ export default function TabLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="ComponentShowcase"
+        options={{
+          title: 'Showcase',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="star.fill" color={color} />,
         }}
       />
     </Tabs>
