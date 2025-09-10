@@ -195,21 +195,21 @@ export default function SpotifySignUp() {
       />
 
       {/* Date of Birth Picker */}
-      <Text style={{ color: '#6b7280', fontSize: 13, fontWeight: '500', alignSelf: 'flex-start', marginBottom: 4, marginLeft: 2 }}>
-        Birthday <Text style={{ color: '#9ca3af', fontSize: 13 }}>ⓘ</Text>
-      </Text>
-      <View style={{ flexDirection: 'row', width: '100%', maxWidth: 340, marginBottom: 16, gap: 8 }}>
+      <View style={{ flexDirection: 'row', width: '100%', maxWidth: 340, marginBottom: 16, gap: 8, alignItems: 'center' }}>
+        <Text style={{ color: '#1DB954', fontSize: 18, fontWeight: 'bold', minWidth: 90, marginRight: 8 }}>
+          Date of birth :
+        </Text>
         {/* Month Dropdown */}
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 0.8 }}>
           <TouchableOpacity
-            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 40, justifyContent: 'space-between', paddingHorizontal: 8 }}
+            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 36, justifyContent: 'space-between', paddingHorizontal: 8 }}
             onPress={() => setShowMonth(!showMonth)}
           >
             <Text style={{ color: '#111827', fontSize: 15, fontWeight: '500' }}>{["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month-1]}</Text>
             <Text style={{ color: '#9ca3af', fontSize: 18, marginLeft: 8 }}>▼</Text>
           </TouchableOpacity>
           {showMonth && (
-            <View style={{ position: 'absolute', top: 44, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
+            <View style={{ position: 'absolute', top: 40, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
               <ScrollView>
                 {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
                   <TouchableOpacity key={i+1} onPress={() => { setMonth(i+1); setShowMonth(false); }} style={{ padding: 10 }}>
@@ -221,16 +221,16 @@ export default function SpotifySignUp() {
           )}
         </View>
         {/* Day Dropdown */}
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 0.6 }}>
           <TouchableOpacity
-            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 40, justifyContent: 'space-between', paddingHorizontal: 8 }}
+            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 36, justifyContent: 'space-between', paddingHorizontal: 8 }}
             onPress={() => setShowDay(!showDay)}
           >
             <Text style={{ color: '#111827', fontSize: 15, fontWeight: '500' }}>{day}</Text>
             <Text style={{ color: '#9ca3af', fontSize: 18, marginLeft: 8 }}>▼</Text>
           </TouchableOpacity>
           {showDay && (
-            <View style={{ position: 'absolute', top: 44, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
+            <View style={{ position: 'absolute', top: 40, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
               <ScrollView>
                 {[...Array(31)].map((_, i) => (
                   <TouchableOpacity key={i+1} onPress={() => { setDay(i+1); setShowDay(false); }} style={{ padding: 10 }}>
@@ -242,16 +242,16 @@ export default function SpotifySignUp() {
           )}
         </View>
         {/* Year Dropdown */}
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 0.9 }}>
           <TouchableOpacity
-            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 40, justifyContent: 'space-between', paddingHorizontal: 8 }}
+            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 36, justifyContent: 'space-between', paddingHorizontal: 8 }}
             onPress={() => setShowYear(!showYear)}
           >
             <Text style={{ color: '#111827', fontSize: 15, fontWeight: '500' }}>{year}</Text>
             <Text style={{ color: '#9ca3af', fontSize: 18, marginLeft: 8 }}>▼</Text>
           </TouchableOpacity>
           {showYear && (
-            <View style={{ position: 'absolute', top: 44, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
+            <View style={{ position: 'absolute', top: 40, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
               <ScrollView>
                 {[...Array(100)].map((_, i) => {
                   const y = 2025 - i;

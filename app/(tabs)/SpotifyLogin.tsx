@@ -119,14 +119,14 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 100,
-    marginBottom: 32,
+    marginBottom: 10,
     resizeMode: 'contain',
   },
   title: {
     color: '#fff',
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
-    marginBottom: 24,
+    marginBottom: 29,
   },
   input: {
     width: '100%',
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   forgotText: {
-    color: '#1DB954',
+    color: '#404341ff',
     fontSize: 15,
     marginBottom: 10,
     textAlign: 'right',
