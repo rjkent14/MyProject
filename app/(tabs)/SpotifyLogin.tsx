@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Animated, Image, TouchableOpacity, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useEffect, useRef } from 'react';
+import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const spotifyGreen = '#1DB954';
 const darkBg = '#191414';
@@ -92,7 +92,10 @@ export default function SpotifyLogin() {
         accessibilityRole="link"
         accessibilityLabel="Sign up"
         accessibilityHint="Navigate to sign up screen">
-        <Text style={styles.signupText}>Don't have an account? Sign up</Text>
+        <Text style={styles.signupText}>
+          Don't have an account?{' '}
+          <Text style={{ color: '#1DB954', textDecorationLine: 'underline' }}>Sign up</Text>
+        </Text>
       </TouchableOpacity>
     </View>
   );

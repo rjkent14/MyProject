@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-
+import React, { useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,11 +90,71 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     gap: 12,
   },
+  dobRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    maxWidth: 340,
+    marginBottom: 16,
+    gap: 8,
+  },
+  dobCol: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  dobLabel: {
+    color: '#b3b3b3',
+    fontSize: 13,
+    marginBottom: 4,
+  },
+  dobScroll: {
+    maxHeight: 38,
+    marginBottom: 2,
+  },
+  dobToggle: {
+    backgroundColor: '#222',
+    borderRadius: 6,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginHorizontal: 2,
+    borderWidth: 1,
+    borderColor: '#444',
+  },
+  dobToggleSelected: {
+    borderColor: '#1DB954',
+    backgroundColor: '#1DB95433',
+  },
+  dobToggleText: {
+    color: '#fff',
+    fontSize: 13,
+  },
+  dobColContainer: {
+    width: '100%',
+    maxWidth: 340,
+    marginBottom: 16,
+  },
+  dobCollapseHeader: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: '#191414',
+    borderBottomWidth: 1,
+    borderColor: '#222',
+    marginBottom: 2,
+  },
+
 });
 
 export default function SpotifySignUp() {
   const router = useRouter();
   const [gender, setGender] = useState('');
+  const [date, setDate] = useState(new Date(2000, 0, 1));
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [day, setDay] = useState(1);
+  const [month, setMonth] = useState(1);
+  const [year, setYear] = useState(2000);
+  const [showMonth, setShowMonth] = useState(false);
+  const [showDay, setShowDay] = useState(false);
+  const [showYear, setShowYear] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -134,15 +193,79 @@ export default function SpotifySignUp() {
         accessibilityLabel="Password"
         accessibilityHint="Enter your password"
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Date of Birth (YYYY-MM-DD)"
-        placeholderTextColor="#b3b3b3"
-        autoCapitalize="none"
-        keyboardType="default"
-        accessibilityLabel="Date of Birth"
-        accessibilityHint="Enter your date of birth in YYYY-MM-DD format"
-      />
+
+      {/* Date of Birth Picker */}
+      <Text style={{ color: '#6b7280', fontSize: 13, fontWeight: '500', alignSelf: 'flex-start', marginBottom: 4, marginLeft: 2 }}>
+        Birthday <Text style={{ color: '#9ca3af', fontSize: 13 }}>ⓘ</Text>
+      </Text>
+      <View style={{ flexDirection: 'row', width: '100%', maxWidth: 340, marginBottom: 16, gap: 8 }}>
+        {/* Month Dropdown */}
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 40, justifyContent: 'space-between', paddingHorizontal: 8 }}
+            onPress={() => setShowMonth(!showMonth)}
+          >
+            <Text style={{ color: '#111827', fontSize: 15, fontWeight: '500' }}>{["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month-1]}</Text>
+            <Text style={{ color: '#9ca3af', fontSize: 18, marginLeft: 8 }}>▼</Text>
+          </TouchableOpacity>
+          {showMonth && (
+            <View style={{ position: 'absolute', top: 44, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
+              <ScrollView>
+                {["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"].map((m, i) => (
+                  <TouchableOpacity key={i+1} onPress={() => { setMonth(i+1); setShowMonth(false); }} style={{ padding: 10 }}>
+                    <Text style={{ color: '#111827', fontSize: 15 }}>{m}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+        </View>
+        {/* Day Dropdown */}
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 40, justifyContent: 'space-between', paddingHorizontal: 8 }}
+            onPress={() => setShowDay(!showDay)}
+          >
+            <Text style={{ color: '#111827', fontSize: 15, fontWeight: '500' }}>{day}</Text>
+            <Text style={{ color: '#9ca3af', fontSize: 18, marginLeft: 8 }}>▼</Text>
+          </TouchableOpacity>
+          {showDay && (
+            <View style={{ position: 'absolute', top: 44, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
+              <ScrollView>
+                {[...Array(31)].map((_, i) => (
+                  <TouchableOpacity key={i+1} onPress={() => { setDay(i+1); setShowDay(false); }} style={{ padding: 10 }}>
+                    <Text style={{ color: '#111827', fontSize: 15 }}>{i+1}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+        </View>
+        {/* Year Dropdown */}
+        <View style={{ flex: 1 }}>
+          <TouchableOpacity
+            style={{ flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, backgroundColor: '#fff', height: 40, justifyContent: 'space-between', paddingHorizontal: 8 }}
+            onPress={() => setShowYear(!showYear)}
+          >
+            <Text style={{ color: '#111827', fontSize: 15, fontWeight: '500' }}>{year}</Text>
+            <Text style={{ color: '#9ca3af', fontSize: 18, marginLeft: 8 }}>▼</Text>
+          </TouchableOpacity>
+          {showYear && (
+            <View style={{ position: 'absolute', top: 44, left: 0, right: 0, backgroundColor: '#fff', borderWidth: 1, borderColor: '#d1d5db', borderRadius: 6, zIndex: 10, maxHeight: 200 }}>
+              <ScrollView>
+                {[...Array(100)].map((_, i) => {
+                  const y = 2025 - i;
+                  return (
+                    <TouchableOpacity key={y} onPress={() => { setYear(y); setShowYear(false); }} style={{ padding: 10 }}>
+                      <Text style={{ color: '#111827', fontSize: 15 }}>{y}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+          )}
+        </View>
+      </View>
 
       <View style={styles.genderContainer}>
         <Text style={styles.genderLabel}>Gender</Text>
@@ -201,6 +324,6 @@ export default function SpotifySignUp() {
           </Text>
         </Text>
       </View>
-  </View>
+    </View>
   );
 }
