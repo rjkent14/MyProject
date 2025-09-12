@@ -1,6 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 const playlists = [
   {
@@ -31,11 +32,30 @@ const playlists = [
 ];
 
 export default function PlaylistsScreen() {
+  // Animation demo
+  const bounce = useSharedValue(0);
+  const animatedLogoStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: -bounce.value * 40 },
+      { scale: 1 + bounce.value * 0.2 },
+    ],
+  }));
+  const triggerBounce = () => {
+    bounce.value = 1;
+    setTimeout(() => {
+      bounce.value = withSpring(0, { damping: 4 });
+    }, 200);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <FontAwesome name="spotify" size={28} color="#1DB954" style={{ marginRight: 8 }} />
+        <Animated.View style={animatedLogoStyle}>
+          <FontAwesome name="spotify" size={48} color="#1DB954" style={{ marginRight: 8 }} />
+        </Animated.View>
         <Text style={styles.headerTitle}>Playlists</Text>
+        <TouchableOpacity style={styles.demoButton} onPress={triggerBounce}>
+          <Text style={styles.demoButtonText}>Show Animation Demo</Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={playlists}
@@ -53,6 +73,19 @@ export default function PlaylistsScreen() {
 }
 
 const styles = StyleSheet.create({
+  demoButton: {
+    marginTop: 10,
+    backgroundColor: '#1DB954',
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 16,
+    alignSelf: 'center',
+  },
+  demoButtonText: {
+    color: '#191414',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
   container: {
     flex: 1,
     backgroundColor: '#191414',

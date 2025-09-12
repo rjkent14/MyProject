@@ -1,34 +1,61 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Animated as RNAnimated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 const spotifyGreen = '#1DB954';
 const darkBg = '#191414';
 
 export default function SpotifyLogin() {
-  const logoOpacity = useRef(new Animated.Value(0)).current;
   const router = useRouter();
-
+  // For fade-in
+  const logoOpacity = useRef(new RNAnimated.Value(0)).current;
   useEffect(() => {
-    Animated.timing(logoOpacity, {
+    RNAnimated.timing(logoOpacity, {
       toValue: 1,
       duration: 1200,
       useNativeDriver: true,
     }).start();
   }, []);
 
+  // For bounce animation demo
+  const bounce = useSharedValue(0);
+  const animatedLogoStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateY: -bounce.value * 40 },
+      { scale: 1 + bounce.value * 0.2 },
+    ],
+  }));
+
+  const triggerBounce = () => {
+    bounce.value = 1;
+    setTimeout(() => {
+      bounce.value = withSpring(0, { damping: 4 });
+    }, 200);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.logoRow}>
-        <Animated.Image
-          source={require('../../assets/images/spotify-logo.png')}
-          style={[styles.logo, { opacity: logoOpacity }]}
-          accessibilityLabel="Spotify logo"
-          accessibilityHint="Fades in when the screen loads"
-        />
+        <Animated.View style={animatedLogoStyle}>
+          <RNAnimated.Image
+            source={require('../../assets/images/spotify-logo.png')}
+            style={[styles.logo, { opacity: logoOpacity }]}
+            accessibilityLabel="Spotify logo"
+            accessibilityHint="Fades in when the screen loads"
+          />
+        </Animated.View>
         <Text style={styles.title} accessibilityRole="header">Spotify</Text>
-      </View>
+        <TouchableOpacity
+          style={styles.demoButton}
+          onPress={triggerBounce}
+          accessibilityRole="button"
+          accessibilityLabel="Show animation demo"
+        >
+          <Text style={styles.demoButtonText}>Show Animation Demo</Text>
+        </TouchableOpacity>
+  </View>
   <View style={{ height: 24 }} />
       <TextInput
         style={styles.input}
@@ -102,6 +129,19 @@ export default function SpotifyLogin() {
 }
 
 const styles = StyleSheet.create({
+  demoButton: {
+    marginTop: 10,
+    backgroundColor: '#1DB954',
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: 16,
+    alignSelf: 'center',
+  },
+  demoButtonText: {
+    color: '#191414',
+    fontWeight: 'bold',
+    fontSize: 15,
+  },
   logoRow: {
     flexDirection: 'column',
     alignItems: 'center',

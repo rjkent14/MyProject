@@ -3,15 +3,22 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '
 import { DarkTheme, DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import PlaylistsScreen from './(tabs)/PlaylistsScreen';
-import ProfileScreen from './(tabs)/ProfileScreen';
-import SettingsScreen from './(tabs)/SettingsScreen';
-import SpotifyLogin from './(tabs)/SpotifyLogin';
+import Animated, { interpolate, useAnimatedStyle } from 'react-native-reanimated';
+import StackNavigator from './StackNavigator';
 
 const Drawer = createDrawerNavigator();
 
 export default function DrawerNavigator() {
   const colorScheme = useColorScheme();
+  // Drawer scale animation using react-native-reanimated
+  // Use drawer progress for animation
+  const [drawerProgress, setDrawerProgress] = React.useState(0);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: interpolate(drawerProgress, [0, 1], [1, 0.9]) },
+    ],
+  }));
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -31,10 +38,17 @@ export default function DrawerNavigator() {
             </DrawerContentScrollView>
           )}
         >
-          <Drawer.Screen name="Home" component={SpotifyLogin} />
-          <Drawer.Screen name="Profile" component={ProfileScreen} />
-          <Drawer.Screen name="Settings" component={SettingsScreen} />
-          <Drawer.Screen name="Playlists" component={PlaylistsScreen} />
+          <Drawer.Screen name="Home">
+            {({ navigation }) => (
+              <Animated.View
+                style={[{ flex: 1 }, animatedStyle]}
+                // @ts-ignore
+                drawerProgress={navigation && navigation.getParent && navigation.getParent().progress}
+              >
+                <StackNavigator />
+              </Animated.View>
+            )}
+          </Drawer.Screen>
         </Drawer.Navigator>
       </NavigationContainer>
     </GestureHandlerRootView>
