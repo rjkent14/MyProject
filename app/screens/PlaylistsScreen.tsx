@@ -8,6 +8,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  Layout,
+} from 'react-native-reanimated';
 
 interface Song {
   id: string;
@@ -55,7 +60,12 @@ export default function PlaylistsScreen() {
   };
 
   const renderPlaylistItem = ({ item }: { item: Song }) => (
-    <View style={styles.songItem}>
+    <Animated.View
+      entering={FadeIn}
+      exiting={FadeOut}
+      layout={Layout}
+      style={styles.songItem}
+    >
       <Text style={styles.songName} numberOfLines={1}>
         {item.name}
       </Text>
@@ -65,15 +75,19 @@ export default function PlaylistsScreen() {
       >
         <Text style={styles.removeText}>Remove</Text>
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 
   const renderHistoryItem = ({ item, index }: { item: string; index: number }) => (
-    <View style={styles.historyItem}>
+    <Animated.View
+      entering={FadeIn}
+      layout={Layout}
+      style={styles.historyItem}
+    >
       <Text style={styles.historyText} numberOfLines={1}>
         {item}
       </Text>
-    </View>
+    </Animated.View>
   );
 
   return (
