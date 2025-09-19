@@ -19,19 +19,64 @@ interface Song {
   name: string;
 }
 
+interface PlaylistState {
+  current: Song[];
+  past: Song[][];
+  future: Song[][];
+}
+
 type Action =
   | { type: 'ADD_SONG'; song: string }
   | { type: 'REMOVE_SONG'; id: string }
-  | { type: 'CLEAR_PLAYLIST' };
+  | { type: 'CLEAR_PLAYLIST' }
+  | { type: 'UNDO' }
+  | { type: 'REDO' };
 
-const playlistReducer = (state: Song[], action: Action): Song[] => {
+const playlistReducer = (state: PlaylistState, action: Action): PlaylistState => {
   switch (action.type) {
-    case 'ADD_SONG':
-      return [...state, { id: Date.now().toString(), name: action.song }];
-    case 'REMOVE_SONG':
-      return state.filter((song: Song) => song.id !== action.id);
-    case 'CLEAR_PLAYLIST':
-      return [];
+    case 'ADD_SONG': {
+      const newCurrent = [...state.current, { id: Date.now().toString(), name: action.song }];
+      return {
+        current: newCurrent,
+        past: [...state.past, state.current],
+        future: [],
+      };
+    }
+    case 'REMOVE_SONG': {
+      const newCurrent = state.current.filter((song: Song) => song.id !== action.id);
+      return {
+        current: newCurrent,
+        past: [...state.past, state.current],
+        future: [],
+      };
+    }
+    case 'CLEAR_PLAYLIST': {
+      return {
+        current: [],
+        past: [...state.past, state.current],
+        future: [],
+      };
+    }
+    case 'UNDO': {
+      if (state.past.length === 0) return state;
+      const newPast = [...state.past];
+      const previous = newPast.pop()!;
+      return {
+        current: previous,
+        past: newPast,
+        future: [state.current, ...state.future],
+      };
+    }
+    case 'REDO': {
+      if (state.future.length === 0) return state;
+      const newFuture = [...state.future];
+      const next = newFuture.shift()!;
+      return {
+        current: next,
+        past: [...state.past, state.current],
+        future: newFuture,
+      };
+    }
     default:
       return state;
   }
@@ -39,7 +84,11 @@ const playlistReducer = (state: Song[], action: Action): Song[] => {
 
 export default function PlaylistsScreen() {
   const [songInput, setSongInput] = useState('');
-  const [playlist, dispatch] = useReducer(playlistReducer, [] as Song[]);
+  const [state, dispatch] = useReducer(playlistReducer, {
+    current: [],
+    past: [],
+    future: [],
+  });
   const [history, setHistory] = useState<string[]>([]);
 
   const addSong = () => {
@@ -58,6 +107,17 @@ export default function PlaylistsScreen() {
   const clearPlaylist = () => {
     dispatch({ type: 'CLEAR_PLAYLIST' });
   };
+
+  const undo = () => {
+    dispatch({ type: 'UNDO' });
+  };
+
+  const redo = () => {
+    dispatch({ type: 'REDO' });
+  };
+
+  const canUndo = state.past.length > 0;
+  const canRedo = state.future.length > 0;
 
   const renderPlaylistItem = ({ item }: { item: Song }) => (
     <Animated.View
@@ -112,15 +172,32 @@ export default function PlaylistsScreen() {
           </TouchableOpacity>
         </View>
 
+        <View style={styles.undoRedoContainer}>
+          <TouchableOpacity
+            style={[styles.undoButton, !canUndo && styles.disabledButton]}
+            onPress={undo}
+            disabled={!canUndo}
+          >
+            <Text style={[styles.buttonText, !canUndo && styles.disabledText]}>Undo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.redoButton, !canRedo && styles.disabledButton]}
+            onPress={redo}
+            disabled={!canRedo}
+          >
+            <Text style={[styles.buttonText, !canRedo && styles.disabledText]}>Redo</Text>
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity style={styles.clearButton} onPress={clearPlaylist}>
           <Text style={styles.clearButtonText}>Clear Playlist</Text>
         </TouchableOpacity>
 
         <Text style={styles.sectionTitle}>
-          Playlist ({playlist.length})
+          Playlist ({state.current.length})
         </Text>
         <FlatList
-          data={playlist}
+          data={state.current}
           keyExtractor={(item) => item.id}
           renderItem={renderPlaylistItem}
           style={styles.list}
@@ -183,10 +260,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: 100,
   },
+  undoRedoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  undoButton: {
+    backgroundColor: '#6c757d',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+    flex: 1,
+    marginRight: 10,
+  },
+  redoButton: {
+    backgroundColor: '#6c757d',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    justifyContent: 'center',
+    flex: 1,
+    marginLeft: 10,
+  },
+  disabledButton: {
+    backgroundColor: '#444',
+  },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  disabledText: {
+    color: '#888',
   },
   clearButton: {
     backgroundColor: '#dc3545',
