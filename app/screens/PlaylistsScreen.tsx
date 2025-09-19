@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import {
   FlatList,
   ScrollView,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -30,10 +31,13 @@ type Action =
   | { type: 'REMOVE_SONG'; id: string }
   | { type: 'CLEAR_PLAYLIST' }
   | { type: 'UNDO' }
-  | { type: 'REDO' };
+  | { type: 'REDO' }
+  | { type: 'LOAD'; state: PlaylistState };
 
 const playlistReducer = (state: PlaylistState, action: Action): PlaylistState => {
   switch (action.type) {
+    case 'LOAD':
+      return action.state;
     case 'ADD_SONG': {
       const newCurrent = [...state.current, { id: Date.now().toString(), name: action.song }];
       return {
@@ -90,6 +94,37 @@ export default function PlaylistsScreen() {
     future: [],
   });
   const [history, setHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const savedState = await AsyncStorage.getItem('playlistState');
+        const savedHistory = await AsyncStorage.getItem('songHistory');
+        if (savedState) {
+          const parsedState = JSON.parse(savedState) as PlaylistState;
+          dispatch({ type: 'LOAD', state: parsedState });
+        }
+        if (savedHistory) {
+          setHistory(JSON.parse(savedHistory));
+        }
+      } catch (error) {
+        console.error('Failed to load data:', error);
+      }
+    };
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        await AsyncStorage.setItem('playlistState', JSON.stringify(state));
+        await AsyncStorage.setItem('songHistory', JSON.stringify(history));
+      } catch (error) {
+        console.error('Failed to save data:', error);
+      }
+    };
+    saveData();
+  }, [state, history]);
 
   const addSong = () => {
     const trimmedSong = songInput.trim();
