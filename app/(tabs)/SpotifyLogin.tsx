@@ -1,5 +1,7 @@
+
 import { FontAwesome } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect, useRef } from 'react';
 import { Animated as RNAnimated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -7,9 +9,15 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 const spotifyGreen = '#1DB954';
 const darkBg = '#191414';
 
+type RootStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
+  Main: undefined;
+};
+
 export default function SpotifyLogin() {
-  const router = useRouter();
-  // For fade-in
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  // Fade-in for logo
   const logoOpacity = useRef(new RNAnimated.Value(0)).current;
   useEffect(() => {
     RNAnimated.timing(logoOpacity, {
@@ -19,116 +27,166 @@ export default function SpotifyLogin() {
     }).start();
   }, []);
 
-  // For bounce animation demo
+  // Bounce animation demo
   const bounce = useSharedValue(0);
   const animatedLogoStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: -bounce.value * 40 },
-      { scale: 1 + bounce.value * 0.2 },
+      { translateY: bounce.value },
     ],
   }));
-
   const triggerBounce = () => {
-    bounce.value = 1;
-    setTimeout(() => {
-      bounce.value = withSpring(0, { damping: 4 });
-    }, 200);
+    bounce.value = withSpring(-30, { damping: 2, stiffness: 80 }, () => {
+      bounce.value = withSpring(0);
+    });
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoRow}>
-        <Animated.View style={animatedLogoStyle}>
-          <RNAnimated.Image
-            source={require('../../assets/images/spotify-logo.png')}
-            style={[styles.logo, { opacity: logoOpacity }]}
-            accessibilityLabel="Spotify logo"
-            accessibilityHint="Fades in when the screen loads"
-          />
-        </Animated.View>
-        <Text style={styles.title} accessibilityRole="header">Spotify</Text>
+    <RNAnimated.ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.logoRow}>
+          <Animated.View style={animatedLogoStyle}>
+            <RNAnimated.Image
+              source={require('../../assets/images/spotify-logo.png')}
+              style={[styles.logo, { opacity: logoOpacity }]}
+              accessibilityLabel="Spotify logo"
+              accessibilityHint="Fades in when the screen loads"
+            />
+          </Animated.View>
+          <Text style={styles.title} accessibilityRole="header">Spotify</Text>
+          <TouchableOpacity
+            style={styles.demoButton}
+            onPress={triggerBounce}
+            accessibilityRole="button"
+            accessibilityLabel="Show animation demo"
+          >
+            <Text style={styles.demoButtonText}>Show Animation Demo</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{ height: 24 }} />
+        <TextInput
+          style={styles.input}
+          placeholder="Email or username"
+          placeholderTextColor="#b3b3b3"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          accessibilityLabel="Email or username"
+          accessibilityHint="Enter your Spotify email or username"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#b3b3b3"
+          secureTextEntry
+          accessibilityLabel="Password"
+          accessibilityHint="Enter your Spotify password"
+        />
+        <View style={{ width: '100%', alignItems: 'flex-end' }}>
+          <TouchableOpacity
+            onPress={() => { /* handle forgot password navigation */ }}
+            accessibilityRole="link"
+            accessibilityLabel="Forgot password?"
+            accessibilityHint="Navigate to password recovery screen">
+            <Text style={styles.forgotText}>Forgot password?</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity
-          style={styles.demoButton}
-          onPress={triggerBounce}
+          style={styles.button}
           accessibilityRole="button"
-          accessibilityLabel="Show animation demo"
-        >
-          <Text style={styles.demoButtonText}>Show Animation Demo</Text>
+          accessibilityLabel="Log in"
+          accessibilityHint="Double tap to log in to your Spotify account"
+          onPress={() => navigation.replace('Main')}>
+          <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
-  </View>
-  <View style={{ height: 24 }} />
-      <TextInput
-        style={styles.input}
-        placeholder="Email or username"
-        placeholderTextColor="#b3b3b3"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        accessibilityLabel="Email or username"
-        accessibilityHint="Enter your Spotify email or username"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        placeholderTextColor="#b3b3b3"
-        secureTextEntry
-        accessibilityLabel="Password"
-        accessibilityHint="Enter your Spotify password"
-      />
-      <View style={{ width: '100%', alignItems: 'flex-end' }}>
+        <Text style={styles.connectText}>Be connected with</Text>
+        <View style={styles.socialContainer}>
+          <TouchableOpacity
+            style={[styles.socialCircle, styles.socialDark]}
+            accessibilityRole="button"
+            accessibilityLabel="Login with Facebook"
+            accessibilityHint="Log in using your Facebook account"
+            onPress={() => {}}>
+            <FontAwesome name="facebook" size={32} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.socialCircle, styles.socialDark]}
+            accessibilityRole="button"
+            accessibilityLabel="Login with Google"
+            accessibilityHint="Log in using your Google account"
+            onPress={() => {}}>
+            <FontAwesome name="google" size={32} color="#fff" />
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity
-          onPress={() => { /* handle forgot password navigation */ }}
+          onPress={() => {
+            const parentNav = navigation.getParent();
+            if (parentNav) {
+              parentNav.navigate('SignUp');
+            } else {
+              navigation.navigate('SignUp');
+            }
+          }}
           accessibilityRole="link"
-          accessibilityLabel="Forgot password?"
-          accessibilityHint="Navigate to password recovery screen">
-          <Text style={styles.forgotText}>Forgot password?</Text>
+          accessibilityLabel="Sign up"
+          accessibilityHint="Navigate to sign up screen">
+          <Text style={styles.signupText}>
+            Don't have an account?{' '}
+            <Text style={{ color: spotifyGreen, textDecorationLine: 'underline' }}>
+              Sign up
+            </Text>
+          </Text>
         </TouchableOpacity>
+
+        {/* Navigation Section */}
+        <View style={styles.navSection}>
+          <Text style={styles.navHeader}>Navigate to:</Text>
+          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Main')}>
+            <Text style={styles.navButtonText}>Profile</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Main')}>
+            <Text style={styles.navButtonText}>Playlists</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Main')}>
+            <Text style={styles.navButtonText}>Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('SignUp')}>
+            <Text style={styles.navButtonText}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <TouchableOpacity
-        style={styles.button}
-        accessibilityRole="button"
-        accessibilityLabel="Log in"
-        accessibilityHint="Double tap to log in to your Spotify account"
-        onPress={() => {}}>
-        <Text style={styles.buttonText}>Log In</Text>
-      </TouchableOpacity>
-
-  {/* Social login options removed as requested */}
-
-      <Text style={styles.connectText}>Be connected with</Text>
-      <View style={styles.socialContainer}>
-        <TouchableOpacity
-          style={[styles.socialCircle, styles.socialDark]}
-          accessibilityRole="button"
-          accessibilityLabel="Login with Facebook"
-          accessibilityHint="Log in using your Facebook account"
-          onPress={() => {}}>
-          <FontAwesome name="facebook" size={32} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.socialCircle, styles.socialDark]}
-          accessibilityRole="button"
-          accessibilityLabel="Login with Google"
-          accessibilityHint="Log in using your Google account"
-          onPress={() => {}}>
-          <FontAwesome name="google" size={32} color="#fff" />
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        onPress={() => router.push('/(tabs)/SpotifySignUp')}
-        accessibilityRole="link"
-        accessibilityLabel="Sign up"
-        accessibilityHint="Navigate to sign up screen">
-        <Text style={styles.signupText}>
-          Don't have an account?{' '}
-          <Text style={{ color: '#1DB954', textDecorationLine: 'underline' }}>Sign up</Text>
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </RNAnimated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  navSection: {
+    marginTop: 32,
+    padding: 16,
+    backgroundColor: '#222',
+    borderRadius: 16,
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 340,
+  },
+  navHeader: {
+    color: spotifyGreen,
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 12,
+  },
+  navButton: {
+    backgroundColor: spotifyGreen,
+    borderRadius: 24,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    marginVertical: 6,
+    width: '100%',
+    alignItems: 'center',
+  },
+  navButtonText: {
+    color: darkBg,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   demoButton: {
     marginTop: 10,
     backgroundColor: '#1DB954',

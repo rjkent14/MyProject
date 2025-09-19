@@ -1,8 +1,7 @@
-
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 export default function ProfileScreen() {
   // Animation demo
@@ -78,32 +77,33 @@ const styles = StyleSheet.create({
   profileSection: {
     alignItems: 'center',
     width: '100%',
+    marginTop: 24,
   },
   avatarPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#232323',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#222',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 18,
+    marginBottom: 16,
   },
   name: {
     color: '#fff',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   email: {
     color: '#b3b3b3',
     fontSize: 16,
-    marginBottom: 18,
+    marginBottom: 12,
   },
   editButton: {
     backgroundColor: '#1DB954',
-    borderRadius: 24,
-    paddingVertical: 10,
-    paddingHorizontal: 32,
+    borderRadius: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 8,
   },
   editButtonText: {
     color: '#191414',

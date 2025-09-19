@@ -1,37 +1,11 @@
 import { FontAwesome } from '@expo/vector-icons';
-import React from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import React, { useState } from 'react';
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
-const playlists = [
-  {
-    id: '1',
-    title: 'Chill Hits',
-    cover: require('../../assets/images/spotify-logo.png'),
-  },
-  {
-    id: '2',
-    title: 'Workout Mix',
-    cover: require('../../assets/images/partial-react-logo.png'),
-  },
-  {
-    id: '3',
-    title: 'Top 50 Global',
-    cover: require('../../assets/images/react-logo.png'),
-  },
-  {
-    id: '4',
-    title: 'Indie Essentials',
-    cover: require('../../assets/images/splash-icon.png'),
-  },
-  {
-    id: '5',
-    title: 'Throwback Vibes',
-    cover: require('../../assets/images/icon.png'),
-  },
-];
-
-export default function PlaylistsScreen() {
+export default function SettingsScreen() {
+  const [notifications, setNotifications] = useState(true);
+  const [darkMode, setDarkMode] = useState(true);
   // Animation demo
   const bounce = useSharedValue(0);
   const animatedLogoStyle = useAnimatedStyle(() => ({
@@ -52,22 +26,20 @@ export default function PlaylistsScreen() {
         <Animated.View style={animatedLogoStyle}>
           <FontAwesome name="spotify" size={48} color="#1DB954" style={{ marginRight: 8 }} />
         </Animated.View>
-        <Text style={styles.headerTitle}>Playlists</Text>
+        <Text style={styles.headerTitle}>Settings</Text>
         <TouchableOpacity style={styles.demoButton} onPress={triggerBounce}>
           <Text style={styles.demoButtonText}>Show Animation Demo</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={playlists}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.playlistItem}>
-            <Image source={item.cover} style={styles.cover} />
-            <Text style={styles.playlistTitle}>{item.title}</Text>
-          </View>
-        )}
-        contentContainerStyle={{ paddingBottom: 40 }}
-      />
+      <View style={styles.settingRow}>
+        <Text style={styles.settingLabel}>Notifications</Text>
+        <Switch value={notifications} onValueChange={setNotifications} trackColor={{ true: '#1DB954' }} />
+      </View>
+      <View style={styles.settingRow}>
+        <Text style={styles.settingLabel}>Dark Mode</Text>
+        <Switch value={darkMode} onValueChange={setDarkMode} trackColor={{ true: '#1DB954' }} />
+      </View>
+      {/* Add navigation logic here if needed */}
     </View>
   );
 }
@@ -103,24 +75,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
   },
-  playlistItem: {
+  settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#232323',
-    borderRadius: 12,
+    justifyContent: 'space-between',
+    width: 320,
     marginBottom: 18,
+    backgroundColor: '#222',
+    borderRadius: 12,
     padding: 12,
-    width: 300,
   },
-  cover: {
-    width: 56,
-    height: 56,
-    borderRadius: 8,
-    marginRight: 18,
-  },
-  playlistTitle: {
+  settingLabel: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
 });

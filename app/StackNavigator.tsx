@@ -1,10 +1,10 @@
 import { CardStyleInterpolators, createStackNavigator, TransitionSpecs } from '@react-navigation/stack';
 import React from 'react';
-import PlaylistsScreen from './(tabs)/PlaylistsScreen';
-import ProfileScreen from './(tabs)/ProfileScreen';
-import SettingsScreen from './(tabs)/SettingsScreen';
 import SpotifyLogin from './(tabs)/SpotifyLogin';
-import SpotifySignUp from './(tabs)/SpotifySignUp';
+import PlaylistsScreen from './screens/PlaylistsScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import SettingsScreen from './screens/SettingsScreen';
+import SpotifySignUp from './screens/SpotifySignUp';
 
 const Stack = createStackNavigator();
 
