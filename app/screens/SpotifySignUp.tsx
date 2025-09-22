@@ -1,7 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -145,34 +144,122 @@ const styles = StyleSheet.create({
 });
 
 export default function SpotifySignUp() {
-  type RootStackParamList = {
-    Login: undefined;
-    SignUp: undefined;
-    Main: undefined;
-  };
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [gender, setGender] = useState('');
-  const [date, setDate] = useState(new Date(2000, 0, 1));
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [day, setDay] = useState(1);
-  const [month, setMonth] = useState(1);
-  const [year, setYear] = useState(2000);
-  const [showMonth, setShowMonth] = useState(false);
-  const [showDay, setShowDay] = useState(false);
-  const [showYear, setShowYear] = useState(false);
+  const [day, setDay] = useState('1');
+  const [month, setMonth] = useState('1');
+  const [year, setYear] = useState('2000');
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logoRow}>
-        <Image
-          source={require('../../assets/images/spotify-logo.png')}
-          style={styles.logo}
-          accessibilityLabel="Spotify logo"
-          accessibilityHint="Spotify logo at the top of the sign up screen"
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+      <View style={styles.container}>
+        <View style={styles.logoRow}>
+          <Image
+            source={require('../../assets/images/spotify-logo.png')}
+            style={styles.logo}
+            accessibilityLabel="Spotify logo"
+            accessibilityHint="Spotify logo at the top of the sign up screen"
+          />
+          <Text style={styles.title}>Sign up for Spotify</Text>
+        </View>
+
+        {/* Account Info */}
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          placeholderTextColor="#b3b3b3"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
         />
-        <Text style={styles.title}>Sign Up for Spotify</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#b3b3b3"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Display name"
+          placeholderTextColor="#b3b3b3"
+          value={displayName}
+          onChangeText={setDisplayName}
+        />
+
+        {/* Gender */}
+        <View style={styles.genderContainer}>
+          <Text style={styles.genderLabel}>Gender</Text>
+          <View style={styles.genderOptions}>
+            {['Female', 'Male', 'Non-binary'].map((g) => (
+              <TouchableOpacity
+                key={g}
+                onPress={() => setGender(g)}
+                style={[styles.genderButton, gender === g && styles.genderButtonSelected]}
+              >
+                <Text style={styles.genderButtonText}>{g}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Date of birth */}
+        <View style={styles.dobColContainer}>
+          <Text style={styles.genderLabel}>Date of birth</Text>
+          <View style={styles.dobRow}>
+            <View style={styles.dobCol}>
+              <Text style={styles.dobLabel}>Month</Text>
+              <TextInput
+                style={styles.input}
+                value={month}
+                onChangeText={setMonth}
+                keyboardType="number-pad"
+                placeholder="MM"
+                placeholderTextColor="#888"
+              />
+            </View>
+            <View style={styles.dobCol}>
+              <Text style={styles.dobLabel}>Day</Text>
+              <TextInput
+                style={styles.input}
+                value={day}
+                onChangeText={setDay}
+                keyboardType="number-pad"
+                placeholder="DD"
+                placeholderTextColor="#888"
+              />
+            </View>
+            <View style={styles.dobCol}>
+              <Text style={styles.dobLabel}>Year</Text>
+              <TextInput
+                style={styles.input}
+                value={year}
+                onChangeText={setYear}
+                keyboardType="number-pad"
+                placeholder="YYYY"
+                placeholderTextColor="#888"
+              />
+            </View>
+          </View>
+        </View>
+
+        {/* Submit */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.replace('/profile')}
+          accessibilityRole="button"
+          accessibilityLabel="Create account"
+        >
+          <Text style={styles.buttonText}>Create account</Text>
+        </TouchableOpacity>
+
+        <Text onPress={() => router.back()} style={styles.backText}>Back to login</Text>
       </View>
-      {/* ...existing code... */}
-    </View>
+    </ScrollView>
   );
 }
