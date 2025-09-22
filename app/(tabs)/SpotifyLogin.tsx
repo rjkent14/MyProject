@@ -1,7 +1,6 @@
 
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Animated as RNAnimated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -9,14 +8,8 @@ import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-na
 const spotifyGreen = '#1DB954';
 const darkBg = '#191414';
 
-type RootStackParamList = {
-  Login: undefined;
-  SignUp: undefined;
-  Main: undefined;
-};
-
 export default function SpotifyLogin() {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const router = useRouter();
   // Fade-in for logo
   const logoOpacity = useRef(new RNAnimated.Value(0)).current;
   useEffect(() => {
@@ -94,7 +87,7 @@ export default function SpotifyLogin() {
           accessibilityRole="button"
           accessibilityLabel="Log in"
           accessibilityHint="Double tap to log in to your Spotify account"
-          onPress={() => navigation.replace('Main')}>
+          onPress={() => router.replace('/playlist')}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
         <Text style={styles.connectText}>Be connected with</Text>
@@ -104,7 +97,7 @@ export default function SpotifyLogin() {
             accessibilityRole="button"
             accessibilityLabel="Login with Facebook"
             accessibilityHint="Log in using your Facebook account"
-            onPress={() => {}}>
+            onPress={() => { }}>
             <FontAwesome name="facebook" size={32} color="#fff" />
           </TouchableOpacity>
           <TouchableOpacity
@@ -112,19 +105,12 @@ export default function SpotifyLogin() {
             accessibilityRole="button"
             accessibilityLabel="Login with Google"
             accessibilityHint="Log in using your Google account"
-            onPress={() => {}}>
+            onPress={() => { }}>
             <FontAwesome name="google" size={32} color="#fff" />
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          onPress={() => {
-            const parentNav = navigation.getParent();
-            if (parentNav) {
-              parentNav.navigate('SignUp');
-            } else {
-              navigation.navigate('SignUp');
-            }
-          }}
+          onPress={() => router.push('/signup')}
           accessibilityRole="link"
           accessibilityLabel="Sign up"
           accessibilityHint="Navigate to sign up screen">
@@ -136,22 +122,7 @@ export default function SpotifyLogin() {
           </Text>
         </TouchableOpacity>
 
-        {/* Navigation Section */}
-        <View style={styles.navSection}>
-          <Text style={styles.navHeader}>Navigate to:</Text>
-          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Main')}>
-            <Text style={styles.navButtonText}>Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Main')}>
-            <Text style={styles.navButtonText}>Playlists</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Main')}>
-            <Text style={styles.navButtonText}>Settings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('SignUp')}>
-            <Text style={styles.navButtonText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+
       </View>
     </RNAnimated.ScrollView>
   );

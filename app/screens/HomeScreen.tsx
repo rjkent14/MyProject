@@ -3,53 +3,42 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function HomeScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: '#1DB95422', dark: '#0f2919' }}
       headerImage={
         <Image
-          source={require('@/assets/images/partial-react-logo.png')}
+          source={require('@/assets/images/spotify-logo.png')}
           style={styles.reactLogo}
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <ThemedText type="title">Good evening</ThemedText>
         <HelloWave />
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/screens/HomeScreen.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
+      <View style={styles.cardGrid}>
+        <View style={[styles.card, { backgroundColor: '#2a2a2a' }]}>
+          <ThemedText type="defaultSemiBold">Liked Songs</ThemedText>
+        </View>
+        <View style={[styles.card, { backgroundColor: '#233b2e' }]}>
+          <ThemedText type="defaultSemiBold">Daily Mix</ThemedText>
+        </View>
+        <View style={[styles.card, { backgroundColor: '#2d2633' }]}>
+          <ThemedText type="defaultSemiBold">Focus</ThemedText>
+        </View>
+        <View style={[styles.card, { backgroundColor: '#2a2a2a' }]}>
+          <ThemedText type="defaultSemiBold">Chill</ThemedText>
+        </View>
+        <View style={[styles.card, { backgroundColor: '#233b2e' }]}>
+          <ThemedText type="defaultSemiBold">Workout</ThemedText>
+        </View>
+        <View style={[styles.card, { backgroundColor: '#2d2633' }]}>
+          <ThemedText type="defaultSemiBold">Party</ThemedText>
+        </View>
+      </View>
     </ParallaxScrollView>
   );
 }
@@ -60,9 +49,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  cardGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 24,
+  },
+  card: {
+    width: '47%'
+    ,
+    padding: 14,
+    borderRadius: 8,
   },
   reactLogo: {
     height: 178,

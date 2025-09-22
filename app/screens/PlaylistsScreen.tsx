@@ -1,6 +1,9 @@
-import { useEffect, useReducer, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
+import { memo, useCallback, useEffect, useReducer, useState } from 'react';
 import {
   FlatList,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -8,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -87,7 +89,9 @@ const playlistReducer = (state: PlaylistState, action: Action): PlaylistState =>
 };
 
 export default function PlaylistsScreen() {
-  const [songInput, setSongInput] = useState('');
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [state, dispatch] = useReducer(playlistReducer, {
     current: [],
     past: [],
@@ -126,14 +130,7 @@ export default function PlaylistsScreen() {
     saveData();
   }, [state, history]);
 
-  const addSong = () => {
-    const trimmedSong = songInput.trim();
-    if (trimmedSong) {
-      dispatch({ type: 'ADD_SONG', song: trimmedSong });
-      setHistory((prev) => [...prev, trimmedSong]);
-      setSongInput('');
-    }
-  };
+  // Add song via UI removed per request
 
   const removeSong = (id: string) => {
     dispatch({ type: 'REMOVE_SONG', id });
@@ -154,94 +151,105 @@ export default function PlaylistsScreen() {
   const canUndo = state.past.length > 0;
   const canRedo = state.future.length > 0;
 
-  const renderPlaylistItem = ({ item }: { item: Song }) => (
-    <Animated.View
-      entering={FadeIn}
-      exiting={FadeOut}
-      layout={Layout}
-      style={styles.songItem}
-    >
+  const filteredCurrent = state.current.filter((s) =>
+    s.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const PlaylistRow = memo(({ item, onRemove }: { item: Song; onRemove: (id: string) => void }) => (
+    <Animated.View entering={FadeIn} exiting={FadeOut} layout={Layout} style={styles.songItem}>
       <Text style={styles.songName} numberOfLines={1}>
         {item.name}
       </Text>
-      <TouchableOpacity
-        style={styles.removeButton}
-        onPress={() => removeSong(item.id)}
-      >
+      <TouchableOpacity style={styles.removeButton} onPress={() => onRemove(item.id)}>
         <Text style={styles.removeText}>Remove</Text>
       </TouchableOpacity>
     </Animated.View>
+  ));
+  PlaylistRow.displayName = 'PlaylistRow';
+
+  const renderPlaylistItem = useCallback(
+    ({ item }: { item: Song }) => <PlaylistRow item={item} onRemove={removeSong} />,
+    [removeSong]
   );
 
-  const renderHistoryItem = ({ item, index }: { item: string; index: number }) => (
-    <Animated.View
-      entering={FadeIn}
-      layout={Layout}
-      style={styles.historyItem}
-    >
+  const HistoryRow = memo(({ text }: { text: string }) => (
+    <Animated.View entering={FadeIn} layout={Layout} style={styles.historyItem}>
       <Text style={styles.historyText} numberOfLines={1}>
-        {item}
+        {text}
       </Text>
     </Animated.View>
+  ));
+  HistoryRow.displayName = 'HistoryRow';
+
+  const renderHistoryItem = useCallback(
+    ({ item }: { item: string; index: number }) => <HistoryRow text={item} />,
+    []
   );
 
   return (
     <View style={styles.container}>
+      {/* Top navigation bar: search + profile menu */}
+      <View style={styles.topBar}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search songs"
+          placeholderTextColor="#888"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <View style={styles.profileContainer}>
+          <TouchableOpacity style={styles.avatar} onPress={() => setMenuOpen((v) => !v)} />
+          {menuOpen && (
+            <View style={styles.dropdownMenu}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuOpen(false); router.push('/settings'); }}>
+                <Text style={styles.menuItemText}>Settings</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.menuItem, styles.logoutItem]} onPress={() => { setMenuOpen(false); router.replace('/(tabs)/SpotifyLogin'); }}>
+                <Text style={[styles.menuItemText, { color: '#dc3545' }]}>Log out</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </View>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
       >
-        <Text style={styles.title}>My Playlist</Text>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={songInput}
-            onChangeText={setSongInput}
-            placeholder="Enter song name"
-            placeholderTextColor="#888"
+        <View style={{ alignItems: 'center', marginBottom: 16 }}>
+          <Image
+            source={require('../../assets/images/spotify-logo.png')}
+            style={{ width: 80, height: 80, resizeMode: 'contain', marginBottom: 6 }}
           />
-          <TouchableOpacity style={styles.addButton} onPress={addSong}>
-            <Text style={styles.buttonText}>Add Song</Text>
-          </TouchableOpacity>
+          <Text style={styles.title}>Spotify</Text>
         </View>
 
-        <View style={styles.undoRedoContainer}>
-          <TouchableOpacity
-            style={[styles.undoButton, !canUndo && styles.disabledButton]}
-            onPress={undo}
-            disabled={!canUndo}
-          >
-            <Text style={[styles.buttonText, !canUndo && styles.disabledText]}>Undo</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.redoButton, !canRedo && styles.disabledButton]}
-            onPress={redo}
-            disabled={!canRedo}
-          >
-            <Text style={[styles.buttonText, !canRedo && styles.disabledText]}>Redo</Text>
-          </TouchableOpacity>
-        </View>
 
-        <TouchableOpacity style={styles.clearButton} onPress={clearPlaylist}>
-          <Text style={styles.clearButtonText}>Clear Playlist</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.sectionTitle}>
-          Playlist ({state.current.length})
-        </Text>
         <FlatList
-          data={state.current}
+          data={filteredCurrent}
           keyExtractor={(item) => item.id}
           renderItem={renderPlaylistItem}
           style={styles.list}
           scrollEnabled={false}
         />
 
-        <Text style={styles.sectionTitle}>
-          Song History ({history.length})
-        </Text>
+        <Text style={styles.sectionTitle}>Browse by category</Text>
+        <View style={styles.categoriesGrid}>
+          {['Pop', 'Hip-Hop', 'Rock', 'Chill', 'Focus', 'Workout'].map((c, idx) => (
+            <View
+              key={c}
+              style={[
+                styles.categoryTile,
+                { backgroundColor: ['#2d2633', '#233b2e', '#2a2a2a', '#1e3264', '#477D95', '#503750'][idx % 6] },
+              ]}
+            >
+              <Text style={styles.categoryText}>{c}</Text>
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.sectionTitle}>Song History ({history.length})</Text>
         <FlatList
           data={history}
           keyExtractor={(_, index) => index.toString()}
@@ -259,6 +267,63 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#191414',
   },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: '#222',
+    color: '#fff',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 24,
+    marginRight: 12,
+    fontSize: 14,
+  },
+  profileContainer: {
+    position: 'relative',
+    zIndex: 1000,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#444',
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 40,
+    right: 0,
+    backgroundColor: '#232323',
+    borderRadius: 12,
+    paddingVertical: 6,
+    width: 160,
+    elevation: 4,
+    zIndex: 1000,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  menuItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#333',
+  },
+  menuItemText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  logoutItem: {
+    borderBottomWidth: 0,
+  },
   scrollView: {
     flex: 1,
   },
@@ -273,80 +338,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 30,
   },
-  inputContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: '#222',
-    color: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginRight: 12,
-    fontSize: 16,
-  },
-  addButton: {
-    backgroundColor: '#1DB954',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-    minWidth: 100,
-  },
-  undoRedoContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  undoButton: {
-    backgroundColor: '#6c757d',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-    flex: 1,
-    marginRight: 10,
-  },
-  redoButton: {
-    backgroundColor: '#6c757d',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    justifyContent: 'center',
-    flex: 1,
-    marginLeft: 10,
-  },
-  disabledButton: {
-    backgroundColor: '#444',
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  disabledText: {
-    color: '#888',
-  },
-  clearButton: {
-    backgroundColor: '#dc3545',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  clearButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+  // removed input and addButton styles
+  // removed undo/redo/clear styles
   sectionTitle: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 12,
     marginTop: 20,
+  },
+  categoriesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  categoryTile: {
+    width: '47%',
+    height: 100,
+    borderRadius: 8,
+    padding: 12,
+    justifyContent: 'flex-end',
+  },
+  categoryText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   list: {
     maxHeight: 200,
