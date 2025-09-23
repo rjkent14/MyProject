@@ -7,7 +7,7 @@ export default function ScreensLayout() {
       <Stack.Screen name="PlaylistsScreen" />
       <Stack.Screen name="ProfileScreen" />
       <Stack.Screen name="SettingsScreen" />
-      <Stack.Screen name="SpotifyLoginScreen" />
+      <Stack.Screen name="SpotifyLogin" />
       <Stack.Screen name="SpotifySignUp" />
       <Stack.Screen name="ComponentShowcaseScreen" />
       <Stack.Screen name="ExploreScreen" />

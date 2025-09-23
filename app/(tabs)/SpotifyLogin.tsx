@@ -10,6 +10,7 @@ const darkBg = '#191414';
 
 export default function SpotifyLogin() {
   const router = useRouter();
+
   // Fade-in for logo
   const logoOpacity = useRef(new RNAnimated.Value(0)).current;
   useEffect(() => {
@@ -87,7 +88,7 @@ export default function SpotifyLogin() {
           accessibilityRole="button"
           accessibilityLabel="Log in"
           accessibilityHint="Double tap to log in to your Spotify account"
-          onPress={() => router.replace('/playlist')}>
+          onPress={() => router.push('/playlist')}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
         <Text style={styles.connectText}>Be connected with</Text>
@@ -110,7 +111,7 @@ export default function SpotifyLogin() {
           </TouchableOpacity>
         </View>
         <TouchableOpacity
-          onPress={() => router.push('/signup')}
+          onPress={() => router.push('/screens/SpotifySignUp')}
           accessibilityRole="link"
           accessibilityLabel="Sign up"
           accessibilityHint="Navigate to sign up screen">
@@ -121,43 +122,12 @@ export default function SpotifyLogin() {
             </Text>
           </Text>
         </TouchableOpacity>
-
-
       </View>
     </RNAnimated.ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  navSection: {
-    marginTop: 32,
-    padding: 16,
-    backgroundColor: '#222',
-    borderRadius: 16,
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: 340,
-  },
-  navHeader: {
-    color: spotifyGreen,
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  navButton: {
-    backgroundColor: spotifyGreen,
-    borderRadius: 24,
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    marginVertical: 6,
-    width: '100%',
-    alignItems: 'center',
-  },
-  navButtonText: {
-    color: darkBg,
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
   demoButton: {
     marginTop: 10,
     backgroundColor: '#1DB954',
