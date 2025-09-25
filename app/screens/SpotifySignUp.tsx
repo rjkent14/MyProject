@@ -251,7 +251,7 @@ export default function SpotifySignUp() {
         {/* Submit */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.replace('/profile')}
+          onPress={() => router.replace('/(tabs)/SpotifyLogin')}
           accessibilityRole="button"
           accessibilityLabel="Create account"
         >

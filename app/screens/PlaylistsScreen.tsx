@@ -12,6 +12,8 @@ import {
   View,
 } from 'react-native';
 
+import { IconSymbol } from '@/components/ui/IconSymbol';
+
 interface Song {
   id: string;
   name: string;
@@ -20,7 +22,6 @@ interface Song {
 export default function PlaylistsScreen() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
   const [songs, setSongs] = useState<Song[]>([]);
   const [history, setHistory] = useState<string[]>([]);
 
@@ -59,19 +60,35 @@ export default function PlaylistsScreen() {
   );
 
   const SongRow = ({ item }: { item: Song }) => (
-    <View style={styles.songItem}>
+    <TouchableOpacity
+      style={styles.songItem}
+      onPress={() => {
+        console.log('Song pressed:', item.name);
+        // Navigate to playlist detail screen
+        // router.push(`/playlist/${item.id}`);
+      }}
+      activeOpacity={0.7}
+    >
       <Text style={styles.songName} numberOfLines={1}>
         {item.name}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 
   const HistoryRow = ({ text }: { text: string }) => (
-    <View style={styles.historyItem}>
+    <TouchableOpacity
+      style={styles.historyItem}
+      onPress={() => {
+        console.log('History item pressed:', text);
+        // Navigate to history detail screen
+        // router.push(`/history/${text}`);
+      }}
+      activeOpacity={0.7}
+    >
       <Text style={styles.historyText} numberOfLines={1}>
         {text}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -85,31 +102,18 @@ export default function PlaylistsScreen() {
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
-        <View style={styles.profileContainer}>
-          <TouchableOpacity
-            style={styles.avatar}
-            onPress={() => setMenuOpen((v) => !v)}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            activeOpacity={0.7}
-          >
-            <View style={styles.avatarInner} />
-          </TouchableOpacity>
-          {menuOpen && (
-            <View style={styles.dropdownMenu} pointerEvents="auto">
-              <TouchableOpacity
-                style={[styles.menuItem, styles.logoutItem]}
-                onPress={() => {
-                  setMenuOpen(false);
-                  router.replace('/(tabs)/SpotifyLogin');
-                }}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.menuItemText, { color: '#dc3545' }]}>Log out</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+        <TouchableOpacity
+          style={styles.menuButton}
+          onPress={() => {
+            // Drawer navigation will be handled by the drawer itself
+            // This button can be used to open the drawer
+            console.log('Menu button pressed - drawer should open');
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          activeOpacity={0.7}
+        >
+          <IconSymbol size={24} name="line.horizontal.3" color="#fff" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView
@@ -137,15 +141,21 @@ export default function PlaylistsScreen() {
         <Text style={styles.sectionTitle}>Browse by category</Text>
         <View style={styles.categoriesGrid}>
           {['Pop', 'Hip-Hop', 'Rock', 'Chill', 'Focus', 'Workout'].map((category, idx) => (
-            <View
+            <TouchableOpacity
               key={category}
               style={[
                 styles.categoryTile,
                 { backgroundColor: ['#2d2633', '#233b2e', '#2a2a2a', '#1e3264', '#477D95', '#503750'][idx % 6] },
               ]}
+              onPress={() => {
+                console.log('Category pressed:', category);
+                // Navigate to category playlist screen
+                // router.push(`/category/${category.toLowerCase()}`);
+              }}
+              activeOpacity={0.8}
             >
               <Text style={styles.categoryText}>{category}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
 
@@ -189,6 +199,14 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 999,
   },
+  menuButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   avatar: {
     width: 32,
     height: 32,
@@ -200,35 +218,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 16,
     backgroundColor: '#444',
-  },
-  dropdownMenu: {
-    position: 'absolute',
-    top: 40,
-    right: 0,
-    backgroundColor: '#232323',
-    borderRadius: 12,
-    paddingVertical: 6,
-    width: 160,
-    elevation: 10,
-    zIndex: 1001,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-  },
-  menuItem: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-  },
-  menuItemText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  logoutItem: {
-    borderBottomWidth: 0,
   },
   scrollView: {
     flex: 1,
