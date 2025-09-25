@@ -5,8 +5,6 @@ export default function ScreensLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="HomeScreen" />
       <Stack.Screen name="PlaylistsScreen" />
-      <Stack.Screen name="ProfileScreen" />
-      <Stack.Screen name="SettingsScreen" />
       <Stack.Screen name="SpotifyLogin" />
       <Stack.Screen name="SpotifySignUp" />
       <Stack.Screen name="ComponentShowcaseScreen" />
