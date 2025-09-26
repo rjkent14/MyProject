@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   container: {
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
 });
 
 export default function SpotifySignUp() {
-  const router = useRouter();
+  const navigation = useNavigation() as any;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -251,14 +251,16 @@ export default function SpotifySignUp() {
         {/* Submit */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.replace('/(tabs)/SpotifyLogin')}
+          onPress={() => {
+            Alert.alert('Sign Up', 'Account creation would be implemented here');
+          }}
           accessibilityRole="button"
           accessibilityLabel="Create account"
         >
           <Text style={styles.buttonText}>Create account</Text>
         </TouchableOpacity>
 
-        <Text onPress={() => router.back()} style={styles.backText}>Back to login</Text>
+        <Text onPress={() => navigation.goBack()} style={styles.backText}>Back to login</Text>
       </View>
     </ScrollView>
   );

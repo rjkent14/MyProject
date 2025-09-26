@@ -1,6 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   FlatList,
   Image,
@@ -25,35 +24,18 @@ export default function PlaylistsScreen() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [history, setHistory] = useState<string[]>([]);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const savedSongs = await AsyncStorage.getItem('songs');
-        const savedHistory = await AsyncStorage.getItem('songHistory');
-        if (savedSongs) {
-          setSongs(JSON.parse(savedSongs));
-        }
-        if (savedHistory) {
-          setHistory(JSON.parse(savedHistory));
-        }
-      } catch (error) {
-        console.error('Failed to load data:', error);
-      }
-    };
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    const saveData = async () => {
-      try {
-        await AsyncStorage.setItem('songs', JSON.stringify(songs));
-        await AsyncStorage.setItem('songHistory', JSON.stringify(history));
-      } catch (error) {
-        console.error('Failed to save data:', error);
-      }
-    };
-    saveData();
-  }, [songs, history]);
+  // Initialize with some sample data
+  useState(() => {
+    const sampleSongs: Song[] = [
+      { id: '1', name: 'Bohemian Rhapsody' },
+      { id: '2', name: 'Stairway to Heaven' },
+      { id: '3', name: 'Hotel California' },
+      { id: '4', name: 'Imagine' },
+      { id: '5', name: 'Sweet Child O\' Mine' },
+    ];
+    setSongs(sampleSongs);
+    setHistory(['Bohemian Rhapsody', 'Stairway to Heaven']);
+  });
 
   const filteredSongs = songs.filter((song) =>
     song.name.toLowerCase().includes(searchQuery.toLowerCase())

@@ -1,9 +1,7 @@
-
 import { FontAwesome } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
-import { Animated as RNAnimated, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { Animated, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 
 const spotifyGreen = '#1DB954';
 const darkBg = '#191414';
@@ -12,34 +10,39 @@ export default function SpotifyLogin() {
   const router = useRouter();
 
   // Fade-in for logo
-  const logoOpacity = useRef(new RNAnimated.Value(0)).current;
+  const logoOpacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    RNAnimated.timing(logoOpacity, {
+    Animated.timing(logoOpacity, {
       toValue: 1,
       duration: 1200,
       useNativeDriver: true,
     }).start();
   }, []);
 
-  // Bounce animation demo
-  const bounce = useSharedValue(0);
-  const animatedLogoStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: bounce.value },
-    ],
-  }));
+  // Simple bounce animation using React Native Animated
+  const bounceAnim = useRef(new Animated.Value(0)).current;
   const triggerBounce = () => {
-    bounce.value = withSpring(-30, { damping: 2, stiffness: 80 }, () => {
-      bounce.value = withSpring(0);
-    });
+    Animated.sequence([
+      Animated.timing(bounceAnim, {
+        toValue: -30,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(bounceAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
+
   return (
-    <RNAnimated.ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }}>
+    <Animated.ScrollView contentContainerStyle={{ flexGrow: 1 }} style={{ flex: 1 }}>
       <View style={styles.container}>
         <View style={styles.logoRow}>
-          <Animated.View style={animatedLogoStyle}>
-            <RNAnimated.Image
+          <Animated.View style={[{ transform: [{ translateY: bounceAnim }] }]}>
+            <Animated.Image
               source={require('../../assets/images/spotify-logo.png')}
               style={[styles.logo, { opacity: logoOpacity }]}
               accessibilityLabel="Spotify logo"
@@ -88,7 +91,9 @@ export default function SpotifyLogin() {
           accessibilityRole="button"
           accessibilityLabel="Log in"
           accessibilityHint="Double tap to log in to your Spotify account"
-          onPress={() => router.push('/playlist')}>
+          onPress={() => {
+            Alert.alert('Login', 'Login functionality would be implemented here');
+          }}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
         <Text style={styles.connectText}>Be connected with</Text>
@@ -123,7 +128,7 @@ export default function SpotifyLogin() {
           </Text>
         </TouchableOpacity>
       </View>
-    </RNAnimated.ScrollView>
+    </Animated.ScrollView>
   );
 }
 

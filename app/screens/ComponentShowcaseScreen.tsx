@@ -51,7 +51,7 @@ export default function ComponentShowcaseScreen() {
           <ThemedText type="defaultSemiBold">Collapsible Component:</ThemedText>
           <Collapsible title="Tap to expand/collapse">
             <ThemedText>
-              This content can be collapsed and expanded. It's useful for showing/hiding
+              This content can be collapsed and expanded. It&apos;s useful for showing/hiding
               additional information or options.
             </ThemedText>
           </Collapsible>
